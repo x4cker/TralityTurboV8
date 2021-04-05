@@ -1,7 +1,7 @@
 #!/bin/bash/python3
-# // By Eddie Z. V1.0 + Cooldown Update And Cancel Pending Orders.
+# // By Eddie Z. V8 + Cooldown Update And Cancel Pending Orders.
 # // Built to use with Trality 1 Minute Interval.
-# // Created to backtest the original Standalone Script.
+# // Created to backtest the original Standalone Script. (Private Only)
 # // Cooldown's are set to 1 in order to backtest. to run live with cooldowns, limits most be changed from 1 to 120 for two minute symbol cooldown.
 
 import time
@@ -13,8 +13,6 @@ SIGNAL_BUY = 1
 SIGNAL_SELL = 2
 SIGNAL_IGNORE = 3
 cross = 0
-
-start_time = time.time()
 
 cooler = {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' : 0}
 
