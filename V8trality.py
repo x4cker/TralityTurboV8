@@ -28,20 +28,13 @@ def initialize(state):
 
 
 def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
-    macd_ind = data.macd(12,26,9)
-    if macd_ind is None:
-        return
-    macdsignal = macd_ind['macd_signal'].as_np()[0,:]
-    macd = macd_ind['macd'].as_np()[0,:]
     rsibuy = False
     adxbuy = False
     cross = 0
-    macdcross = 0
     orderID = 0
     rsi = data.rsi(14).as_np()[0,:]
     adx = data.adx(adx_n).as_np()[0,:]
-    roc = data.roc(4).last
-    #stoch = data.stoch(14).as_np()[0,:]
+
     if  rsi[-1] < rsi[0] < 38:
         rsibuy = True
 
@@ -67,7 +60,7 @@ def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
 
     # // Check Liquidity For Buy Rules
     if liquidity > portvalue * 0.98 and position is None:
-        # // Buy Rule for ETH
+        # // Buy Rule
         if cooler[data.symbol] != 0 and now - cooler[data.symbol] >= 1 and now - cooler[data.symbol] < 10000 or cooler[data.symbol] == 0:
             if buyer[data.symbol] != 0 and now - buyer[data.symbol] >= 1 or buyer[data.symbol] == 0: #// Checking if cooldown time passed.
                 if not has_position and rsibuy and (42 > adx[0] > 25 or adxbuy):
@@ -91,7 +84,7 @@ def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
         diff = 100 - ((float(position.entry_price) / float(data.close_last)) * 100)
         if diff >= 0.01 or diff <= -0.01:
 
-            if rsi[0] > 74 and adxbuy == False and diff > 0.55:
+            if rsi[0] > 75 and adxbuy == False and diff > 0.55:
                 close_position(data.symbol)
                 print(f"!!!!!!! SELL SIGNAL {data.symbol}  Price: {data.close_last} - Diff: {diff} !!!!!!!!!")
 
@@ -102,13 +95,13 @@ def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
                     tp_position[data.symbol] = data.close_last
                     
                     
-            # // DYNAMIC TP - Stage 2 Every 0.08% And Dynamic STOP LOSS Section.
+            # // DYNAMIC TP - Stage 2 Every 0.06% And Dynamic STOP LOSS Section.
             elif tp_newposition[data.symbol]:
                 if data.close_last >= float(tp_position[data.symbol]) + (float(position.entry_price) * 0.006):
                     print(f"Position Upgrade for {data.symbol} Price: {data.close_last} - Diff: {diff}")
                     tp_position[data.symbol] = data.close_last
 
-             # // DYNAMIC SL - Stop Loss for Position Change -0.014%
+             # // DYNAMIC SL - Stop Loss for Position Change -0.03%
                 elif data.close_last <= float(tp_position[data.symbol]) - (float(position.entry_price) * 0.003):
                     print(f"!!!!!!! STOP LOSS AFTER POSITION CHANGE Initiated for {data.symbol}  Price: {data.close_last} - Diff: {diff} !!!!!!!!!")
                     close_position(data.symbol)
