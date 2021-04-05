@@ -11,6 +11,7 @@ Features:
 
 
 1. Cooldowns are disabled in order to backtest. Cooldowns will not work via backtesting as epoch is being calculated in realtime while backtest speed's up time forward.
-2. For any suggestions: DoubleTrouble2 @ Discord(Trality Channel)
+2. For any suggestions: DoubleTrouble2 @ Discord(Trality Channel
+3. If you choose to trade other symbols, Make sure you change the lists accordinly.
 
 **Use At Your Own Risk.**
