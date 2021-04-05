@@ -2,8 +2,11 @@
 
 Features:
 1.Dynamic Take Profit
+
 2.Sell & Buy Cooldown.
+
 3.Auto Cancel Pending Orders
+
 4.Built In Strategy & More. (RSI EMA ADX)
 
 
