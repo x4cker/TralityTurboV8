@@ -1,6 +1,6 @@
 #!/bin/bash/python3
 # // By Eddie Z. V1.0 + Cooldown Update And Cancel Pending Orders.
-# // Build to use with Trality 1 Minute Interval.
+# // Built to use with Trality 1 Minute Interval.
 # // Created to backtest the original Standalone Script.
 # // Cooldown's are set to 1 in order to backtest. to run live with cooldowns, limits most be changed from 1 to 120 for two minute symbol cooldown.
 
