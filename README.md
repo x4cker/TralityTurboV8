@@ -14,4 +14,8 @@ Features:
 2. For any suggestions: DoubleTrouble2 @ Discord(Trality Channel)
 3. If you choose to trade other symbols, Make sure you change the lists accordinly.
 
+![image](https://user-images.githubusercontent.com/77024922/114835563-5fc35400-9dda-11eb-9de2-aed11ff17204.png)
+
+
+
 **Use At Your Own Risk.**
