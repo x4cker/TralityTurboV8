@@ -113,7 +113,7 @@ def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
         diff = 100 - ((float(position.entry_price) / float(data.close_last)) * 100)
         if diff >= 0.01 or diff <= -0.01:
 
-            if rsi[0] > 90 and adxbuy == False and diff > 0.55:
+            if rsi[0] > 82 and adxbuy == False and diff > 0.55:
                 close_position(data.symbol)
                 print(f"!!!!!!! SELL SIGNAL {data.symbol}  Price: {data.close_last} - Diff: {diff} !!!!!!!!!")
 
