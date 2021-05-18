@@ -16,16 +16,11 @@ cross = 0
 
 def initialize(state):
    state.signals = {}
-   state.tp_newposition = {'LTCUSDT' : False }
    state.cooler = {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' : 0,'TRXUSDT': 0}
-
    state.buyer = {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' :0,'TRXUSDT': 0}
-
    state.tp_newposition =  {'LTCUSDT' : False, 'ADAUSDT' : False, 'DASHUSDT' : False, 'LINKUSDT' : False, 'FIOUSDT' : False, 'VETUSDT' : False , 'BNBUSDT' : False, 'ETHUSDT' : False, 'DOTUSDT' : False, 'NEOUSDT' : False, 'TRXUSDT':False}
    state.tp_position =  {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' : 0,'TRXUSDT': 0}
-
    state.signal_parameters = [22, 14, 30, 14, 9]
-
 
 
 def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
