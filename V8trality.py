@@ -136,7 +136,7 @@ def compute_signal(state, data, short_n, medium_n, long_n, rsi_n, adx_n):
                     state.cooler[data.symbol] = selltime
 
 
-                if data.close_last < float(position.entry_price) - (float(position.entry_price) * 0.021):
+                if data.close_last < float(position.entry_price) - (float(position.entry_price) * 0.038):
                     print(f"STOP LOSS")
                     close_position(data.symbol)
                     state.tp_newposition[data.symbol] = False
