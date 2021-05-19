@@ -1,29 +1,29 @@
 #!/bin/bash/python3
-# // V9 
+# // V10
 # // Built to use with Trality 1 Minute Interval.
 # // Created to backtest the original Standalone Script. (Private Only)
 # // Update: Added Stoch and a Stronger Pattern Recognition, Portvalue is splitted into two buys.
 
 import time
 
+def initialize(state):
+    state.signals = {}
+    state.cooler = {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' : 0,'TRXUSDT': 0}
+    state.buyer = {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' :0,'TRXUSDT': 0}
+    state.tp_newposition =  {'LTCUSDT' : False, 'ADAUSDT' : False, 'DASHUSDT' : False, 'LINKUSDT' : False, 'FIOUSDT' : False, 'VETUSDT' : False , 'BNBUSDT' : False, 'ETHUSDT' : False, 'DOTUSDT' : False, 'NEOUSDT' : False, 'TRXUSDT':False}
+    state.tp_position =  {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' : 0,'TRXUSDT': 0}
+    state.signal_parameters = [22, 14, 30, 14, 9]
+    
 SYMBOLS = ["VETUSDT", "BNBUSDT",  "DOTUSDT", "NEOUSDT"]
 SYMBOLS2 = ["DASHUSDT","LTCUSDT","TRXUSDT"]
 
 SIGNAL_BUY = 1
 SIGNAL_SELL = 2
 SIGNAL_IGNORE = 3
-cross = 0
-
-def initialize(state):
-   state.signals = {}
-   state.cooler = {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' : 0,'TRXUSDT': 0}
-   state.buyer = {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' :0,'TRXUSDT': 0}
-   state.tp_newposition =  {'LTCUSDT' : False, 'ADAUSDT' : False, 'DASHUSDT' : False, 'LINKUSDT' : False, 'FIOUSDT' : False, 'VETUSDT' : False , 'BNBUSDT' : False, 'ETHUSDT' : False, 'DOTUSDT' : False, 'NEOUSDT' : False, 'TRXUSDT':False}
-   state.tp_position =  {'LTCUSDT' : 0, 'ADAUSDT' : 0 , 'DASHUSDT' : 0, 'LINKUSDT' : 0, 'FIOUSDT' : 0, 'VETUSDT' : 0 , 'BNBUSDT' : 0, 'ETHUSDT' : 0, 'DOTUSDT' : 0, 'NEOUSDT' : 0,'TRXUSDT': 0}
-   state.signal_parameters = [22, 14, 30, 14, 9]
 
 
-def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
+
+def compute_signal(state, data, short_n, medium_n, long_n, rsi_n, adx_n):
     rsibuy = False
     adxbuy = False
     cross = 0
@@ -86,17 +86,17 @@ def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
     # // Check Liquidity For Buy Rules
     if liquidity > portvalue * 0.48 and position is None:
         # // Buy Rule
-        if cooler[data.symbol] != 0 and now - cooler[data.symbol] >= 1 and now - cooler[data.symbol] < 10000 or cooler[data.symbol] == 0:
-            if buyer[data.symbol] != 0 and now - buyer[data.symbol] >= 1 or buyer[data.symbol] == 0: #// Checking if cooldown time passed.
+        if state.cooler[data.symbol] != 0 and now - state.cooler[data.symbol] >= 1 and now - state.cooler[data.symbol] < 10000 or state.cooler[data.symbol] == 0:
+            if state.buyer[data.symbol] != 0 and now - state.buyer[data.symbol] >= 1 or state.buyer[data.symbol] == 0: #// Checking if cooldown time passed.
                 if not has_position and (cross > 0 or data.close_last < bbands_adjusted or stochbuy) and (rsibuy and rsi[0] < 38 or rsi_long[0] < 40 and rsishifts) and cross >= 0:
                     buy_value = float(portvalue) * 0.48 / data.close_last
                     order_market_target(symbol=data.symbol,target_percent=0.48)      
                     order_stop_loss(symbol=data.symbol, amount=buy_value, stop_percent=0.025,subtract_fees=False)
                     print(f"● Buy Rule 1 for {data.symbol} , Value: {buy_value} at Current market price: {data.close_last}")
                     print(f"● Wallet Value: {portvalue}")
-                    print(f"● Buy Values - ADX: {adx[0]} // RSI: {rsi[0]} // // TIME DIFF : {now - cooler[data.symbol]}")
+                    print(f"● Buy Values - ADX: {adx[0]} // RSI: {rsi[0]} // // TIME DIFF : {now - state.cooler[data.symbol]}")
                     buytime = time.time()
-                    buyer[data.symbol] = buytime
+                    state.buyer[data.symbol] = buytime
 
         else:
     # // Buy Cooldown
@@ -113,36 +113,36 @@ def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
                 close_position(data.symbol)
                 print(f"!!!!!!! SELL SIGNAL {data.symbol}  Price: {data.close_last} - Diff: {diff} !!!!!!!!!")
 
-            if not tp_newposition[data.symbol]:
+            if not state.tp_newposition[data.symbol]:
                 if data.close_last >= float(position.entry_price) + (float(position.entry_price) * 0.01):
                     print(f"Position Initiated for {data.symbol} Price: {data.close_last} - Diff: {diff}")
-                    tp_newposition[data.symbol] = True
-                    tp_position[data.symbol] = data.close_last
+                    state.tp_newposition[data.symbol] = True
+                    state.tp_position[data.symbol] = data.close_last
                     
                     
             # // DYNAMIC TP - Stage 2 Every 0.06% And Dynamic STOP LOSS Section.
-            elif tp_newposition[data.symbol]:
-                if data.close_last >= float(tp_position[data.symbol]) + (float(position.entry_price) * 0.005):
+            elif state.tp_newposition[data.symbol]:
+                if data.close_last >= float(state.tp_position[data.symbol]) + (float(position.entry_price) * 0.005):
                     print(f"Position Upgrade for {data.symbol} Price: {data.close_last} - Diff: {diff}")
-                    tp_position[data.symbol] = data.close_last
+                    state.tp_position[data.symbol] = data.close_last
 
              # // DYNAMIC SL - Stop Loss for Position Change -0.03%
-                elif data.close_last <= float(tp_position[data.symbol]) - (float(position.entry_price) * 0.0029):
+                elif data.close_last <= float(state.tp_position[data.symbol]) - (float(position.entry_price) * 0.0029):
                     print(f"!!!!!!! STOP LOSS AFTER POSITION CHANGE Initiated for {data.symbol}  Price: {data.close_last} - Diff: {diff} !!!!!!!!!")
                     close_position(data.symbol)
-                    tp_newposition[data.symbol] = False
-                    tp_position[data.symbol] = 0
+                    state.tp_newposition[data.symbol] = False
+                    state.tp_position[data.symbol] = 0
                     selltime = time.time()
-                    cooler[data.symbol] = selltime
+                    state.cooler[data.symbol] = selltime
 
 
                 if data.close_last < float(position.entry_price) - (float(position.entry_price) * 0.021):
                     print(f"STOP LOSS")
                     close_position(data.symbol)
-                    tp_newposition[data.symbol] = False
-                    tp_position[data.symbol] = 0
+                    state.tp_newposition[data.symbol] = False
+                    state.tp_position[data.symbol] = 0
                     selltime = time.time()
-                    cooler[data.symbol] = selltime
+                    state.cooler[data.symbol] = selltime
 
 
 ################################################ Cancel Pending Orders Over 300 Seconds #######################################
@@ -161,7 +161,7 @@ def compute_signal(data, short_n, medium_n, long_n, rsi_n, adx_n):
 def resolve_ema_signal(state, data):
     if data is None:
         return
-    state.signals[data.symbol] = compute_signal(data, *state.signal_parameters)
+    state.signals[data.symbol] = compute_signal(state, data, *state.signal_parameters)
 
 ################################################# INTERVALS 1TIK ############################################################
 
