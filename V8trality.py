@@ -1,8 +1,4 @@
-#!/bin/bash/python3
-# // V10
-# // Built to use with Trality 1 Minute Interval.
-# // Created to backtest the original Standalone Script. (Private Only)
-# // Update: Added Stoch and a Stronger Pattern Recognition, Portvalue is splitted into two buys.
+#Updated 21/05
 
 import time
 
@@ -45,10 +41,10 @@ def compute_signal(state, data, short_n, medium_n, long_n, rsi_n, adx_n):
     bbands_lower = bbands["bbands_lower"].last
     bbands_upper = bbands["bbands_upper"].last
     
-    if stoch.stoch_k[0] > stoch.stoch_d[0] and stoch.stoch_k[-1] < stoch.stoch_d[-1] and stoch.stoch_d[0] < 20:
+    if stoch.stoch_k[0] > stoch.stoch_d[0] and stoch.stoch_k[-1] < stoch.stoch_d[-1] and stoch.stoch_d[0] < 30:
         stochbuy = True
 
-    if  rsi[-1] < rsi[0] < 35:
+    if  rsi[-1] < rsi[0] < 30:
         rsibuy = True
 
     if rsi[-2] < rsi[-1] < rsi[0]:
@@ -85,18 +81,15 @@ def compute_signal(state, data, short_n, medium_n, long_n, rsi_n, adx_n):
 
     # // Check Liquidity For Buy Rules
     if liquidity > portvalue * 0.48 and position is None:
-        # // Buy Rule
-        if state.cooler[data.symbol] != 0 and now - state.cooler[data.symbol] >= 1 and now - state.cooler[data.symbol] < 10000 or state.cooler[data.symbol] == 0:
-            if state.buyer[data.symbol] != 0 and now - state.buyer[data.symbol] >= 1 or state.buyer[data.symbol] == 0: #// Checking if cooldown time passed.
-                if not has_position and (cross > 0 or data.close_last < bbands_adjusted or stochbuy) and (rsibuy and rsi[0] < 38 or rsi_long[0] < 40 and rsishifts) and cross >= 0:
-                    buy_value = float(portvalue) * 0.48 / data.close_last
-                    order_market_target(symbol=data.symbol,target_percent=0.48)      
-                    order_stop_loss(symbol=data.symbol, amount=buy_value, stop_percent=0.025,subtract_fees=False)
-                    print(f"● Buy Rule 1 for {data.symbol} , Value: {buy_value} at Current market price: {data.close_last}")
-                    print(f"● Wallet Value: {portvalue}")
-                    print(f"● Buy Values - ADX: {adx[0]} // RSI: {rsi[0]} // // TIME DIFF : {now - state.cooler[data.symbol]}")
-                    buytime = time.time()
-                    state.buyer[data.symbol] = buytime
+
+        if not has_position and stochbuy:
+            buy_value = float(portvalue) * 0.48 / data.close_last
+            order_market_target(symbol=data.symbol,target_percent=0.48)      
+            print(f"● Buy Rule 1 for {data.symbol} , Value: {buy_value} at Current market price: {data.close_last}")
+            print(f"● Wallet Value: {portvalue}")
+            print(f"● Buy Values - ADX: {adx[0]} // RSI: {rsi[0]} // // TIME DIFF : {now - state.cooler[data.symbol]}")
+            buytime = time.time()
+            state.buyer[data.symbol] = buytime
 
         else:
     # // Buy Cooldown
@@ -109,12 +102,8 @@ def compute_signal(state, data, short_n, medium_n, long_n, rsi_n, adx_n):
         diff = 100 - ((float(position.entry_price) / float(data.close_last)) * 100)
         if diff >= 0.01 or diff <= -0.01:
 
-            if rsi[0] > 82 and adxbuy == False and diff > 0.55:
-                close_position(data.symbol)
-                print(f"!!!!!!! SELL SIGNAL {data.symbol}  Price: {data.close_last} - Diff: {diff} !!!!!!!!!")
-
             if not state.tp_newposition[data.symbol]:
-                if data.close_last >= float(position.entry_price) + (float(position.entry_price) * 0.01):
+                if data.close_last >= float(position.entry_price) + (float(position.entry_price) * 0.016):
                     print(f"Position Initiated for {data.symbol} Price: {data.close_last} - Diff: {diff}")
                     state.tp_newposition[data.symbol] = True
                     state.tp_position[data.symbol] = data.close_last
@@ -127,7 +116,7 @@ def compute_signal(state, data, short_n, medium_n, long_n, rsi_n, adx_n):
                     state.tp_position[data.symbol] = data.close_last
 
              # // DYNAMIC SL - Stop Loss for Position Change -0.03%
-                elif data.close_last <= float(state.tp_position[data.symbol]) - (float(position.entry_price) * 0.0029):
+                elif data.close_last <= float(state.tp_position[data.symbol]) - (float(position.entry_price) * 0.005):
                     print(f"!!!!!!! STOP LOSS AFTER POSITION CHANGE Initiated for {data.symbol}  Price: {data.close_last} - Diff: {diff} !!!!!!!!!")
                     close_position(data.symbol)
                     state.tp_newposition[data.symbol] = False
@@ -136,7 +125,7 @@ def compute_signal(state, data, short_n, medium_n, long_n, rsi_n, adx_n):
                     state.cooler[data.symbol] = selltime
 
 
-                if data.close_last < float(position.entry_price) - (float(position.entry_price) * 0.038):
+                if data.close_last < float(position.entry_price) - (float(position.entry_price) * 0.1):
                     print(f"STOP LOSS")
                     close_position(data.symbol)
                     state.tp_newposition[data.symbol] = False
